@@ -27,6 +27,7 @@
   <ItemGroup>
     <Content Include="account.txt" />
     <Content Include="blockList.txt" />
+    <Content Include="credit_account.log" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>
