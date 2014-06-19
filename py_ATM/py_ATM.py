@@ -7,7 +7,7 @@ _block_file = 'blockList.txt'
 _log_file = 'credit_account.log'
 _account_pickle = 'account.pickle'
 
-def read():
+def readAccount():
     "Import account file into memory, creating account dictionary"
     with open(_account_file) as f:
         f.readline()    # Ingore first line -- the comment bar
@@ -23,6 +23,14 @@ def read():
             _accounts[line[0]] = line[1:]        # Adding account information into dictionary
     #print _accounts
 
+def writeAccount(account):
+    with open (_account_file, 'w') as f:
+        f.writelines("Account	password	credit	balance\n")
+    for k, v in account.items():
+        print k, v[0], v[1], v[2]
+        f = open(_account_file, 'a')
+        f.writelines(k + '\t' + v[0] + '\t' + v[1] + '\t' + str(v[2]) + '\n')   # need change 'balance' from float to string format
+
 def lookup(account):
     "Check if user account exist in the dictionary, if exist, return user's information or 'True'"
     return _accounts.get(account)
@@ -37,7 +45,7 @@ def checkBlock(account):
             else:
                 continue
 
-def write(account):
+def block(account):
     f = open(_block_file, 'a')
     f.writelines(account + '\n')        # Windows using \n
     f.close()
@@ -57,7 +65,7 @@ def login(account, times):
                     print 'Password incorrect!'
             else:
                 print 'Login Failed %s times, block this account!!' % times
-                write(account)          # Adding user into block list
+                block(account)          # Adding user into block list
                 return False            # <-- If user been block, return false
         else:
             print 'User have been blocked already!'
@@ -73,21 +81,21 @@ def loger(account, tran_date, tran_type, amount, interest):
     f.close()
 
 def record_amount(account, tran_date, tran_type, amount, interest):
-    balance = int(_entry[account][2])
+    balance = float(_entry[account][2])
     if amount < 0:      # Deposit when amount less than 0
         if _tran_type == 'cash':
             balance -= amount
-            _entry[_account][2] = balance   # Update binary file(_account_pickle) -- deposit
+            _entry[_account][2] = balance       # Update binary file(_account_pickle) -- deposit
             with open (_account_pickle, 'wb') as f:
                 pickle.dump(_entry, f)
             print "Cash In: %s by %s success!" % (-amount, tran_type)
-            print "You have %s rest now!" % balance
+            print "You have balance: %s now!" % balance
             loger(account, tran_date, tran_type, amount, interest)
         else:
             print "You must deposit by cash!"
     else:               # Withdrawal when amount greater than 0
         if _tran_type == 'cash':    # Withdrawal by cash, will cost interest
-            interest = 0.05 * int(_amount)        # set interest
+            interest = 0.05 * float(_amount)        # set interest
             if balance < (amount + interest):
                 print "Amount: %s + Interest: %s = %s" % (amount, interest, amount + interest)
                 print "Sorry, you don't have enough money to buy it!!"
@@ -97,7 +105,7 @@ def record_amount(account, tran_date, tran_type, amount, interest):
                 with open (_account_pickle, 'wb') as f:
                     pickle.dump(_entry, f)
                 print "Pay Out: %s + Interest: %s by %s success!" % (amount, interest, tran_type)
-                print "You have %s rest now!" % balance
+                print "You have balance: %s now!" % balance
                 loger(account, tran_date, tran_type, amount, interest)
         else:                       # Withdrawal by card, no interest
             if balance < amount:
@@ -108,13 +116,12 @@ def record_amount(account, tran_date, tran_type, amount, interest):
                 with open (_account_pickle, 'wb') as f:
                     pickle.dump(_entry, f)
                 print "Pay Out: %s + Interest: %s by %s success!" % (amount, interest, tran_type)
-                print "You have %s rest now!" % balance
+                print "You have balance: %s now!" % balance
                 loger(account, tran_date, tran_type, amount, interest)
 
-read()          # Import account information into app
-_times = 3      # block accunt if login failed 3 times
-
 print "***Welcome to ATM***"
+readAccount()          # Import account information into app
+_times = 3      # block accunt if login failed 3 times
 with open (_account_pickle, 'wb') as f:     # dump dictionary(_accounts) to binary file(_account_pickle)
     pickle.dump(_accounts, f)
 with open (_account_pickle, 'rb') as f:     # load binary file(_account_pickle) into dictionary(_entry)
@@ -125,16 +132,20 @@ while True:
     if login(_account, _times):         # If user login success, he can continue following functions
         print "***Main Window***"
         while True:
-
             _tran_date = time.strftime('%Y-%m-%d/%H:%M:%S', time.localtime())           # Log local time as transaction time
-            _balance = int(_entry[_account][2])
+            _balance = float(_entry[_account][2])
             print "You have %s in total!" % _balance
-            _tran_type = raw_input("Transcation type('Card' or 'Cash'?): ").strip().lower()
+            _tran_type = raw_input("Transcation type('Card'/'Cash'): ").strip().lower()
             if len(_tran_type) == 0: continue
-            _amount = raw_input("Transaction amount: ").strip()
-            _interest = 0
-            record_amount(_account, _tran_date, _tran_type, int(_amount), _interest)
-            if raw_input("----------------------\n>>>Enter any key to continue...<<<\n>>>Enter 'q' to logout...<<<\n") == 'q':
-                break
+            if _tran_type == 'card' or 'cash':
+                _amount = raw_input("Transaction amount: ").strip()
+                _interest = 0
+                record_amount(_account, _tran_date, _tran_type, float(_amount), float(_interest))
+                if raw_input("----------------------\n>>>Enter any key to continue...<<<\n>>>Enter 'q' to logout...<<<\n") == 'q':
+                    _accounts = _entry
+                    writeAccount(_accounts)
+                    break
+            else:
+                print "Transaction Type Incorrect!!"
     else:
         print "Login Failed!"
