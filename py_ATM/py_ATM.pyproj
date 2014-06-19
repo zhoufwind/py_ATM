@@ -25,6 +25,7 @@
     <Compile Include="py_ATM.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="account.pickle" />
     <Content Include="account.txt" />
     <Content Include="blockList.txt" />
     <Content Include="credit_account.log" />
