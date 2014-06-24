@@ -28,6 +28,7 @@ def main():
             print "QUIT"
             break
         elif m_login.f_login(_accounts, _account, _times, _block_file):     # If user login success, he can continue following functions
+            m_report.f_monthlybills(_account)       # Monthly Bills Report function
             print '''***Main Window***
             0   : Check Balance
             1   : Swiping Card
@@ -57,19 +58,6 @@ def main():
                 elif cmd == '5':
                     print 'Return'
                     break
-            #while True:
-                #_tran_type = raw_input("Transcation type('Card'/'Cash'): ").strip().lower()
-                #if len(_tran_type) == 0: continue
-                #elif _tran_type == 'card' or 'cash':
-                #    _amount = raw_input("Transaction amount: ").strip()
-                #    _interest = 0
-                #    record_amount(_account, _tran_date, _tran_type, float(_amount), float(_interest))
-                #    if raw_input("Enter any key to continue...Quit(Q): ") == 'q':
-                #        _accounts = _entry
-                #        writeAccount(_accounts)
-                #        break
-                #else:
-                #    print "Transaction Type Incorrect!!"
     _accounts = _entry
     m_account_IO.writeAccount(_accounts, _account_file)
     print "Have a nice day! Goodbye!"

@@ -15,7 +15,7 @@ def f_swipingCard(entry, account):
     _tran_type = 'card'
     while True:
         _amount = raw_input("Transaction amount: ").strip()     # how much you will pay
-        pattern = re.compile(r'^\d*$')
+        pattern = re.compile(r'^\d*$')      # BUG -- CANNOT INPUT FLOAT!!!
         match = pattern.match(_amount)
         if len(_amount) == 0: continue
         elif _amount == 'q':
