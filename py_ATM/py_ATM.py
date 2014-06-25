@@ -41,7 +41,7 @@ def main():
                 elif cmd == '5':    # Logout
                     print 'Return'
                     break
-    #m_account_IO.writeAccount(_entry)
+    m_account_IO.writeAccount(_entry)
     print "Have a nice day! Goodbye!"
     #sys.exit()
 
