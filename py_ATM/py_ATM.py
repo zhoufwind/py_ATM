@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-import m_account_IO, m_login, m_tran, m_report
+import m_account_IO, m_login, m_tran, m_report, py_ATM_Admin
 
 _times = 3      # block accunt if login failed 3 times
 
@@ -23,10 +23,11 @@ def main():
             2   : Withdrawal
             3   : Deposit
             4   : Check Log
-            5   : Logout
+            5   : Account Admin
+            6   : Logout
             '''
             while True:
-                cmd = raw_input("Enter command: ").strip()
+                cmd = raw_input("Enter command(1/2/3/4/5/6): ").strip()
                 if len(cmd) == 0: continue
                 elif cmd == '0':    # check balance function
                     m_tran.f_checkBalance(_entry, _account)
@@ -39,7 +40,10 @@ def main():
                 elif cmd == '4':    # Check log function
                     m_report.f_report(_account)
                 elif cmd == '5':    # Logout
-                    print 'Return'
+                    py_ATM_Admin.main()
+                    continue
+                elif cmd == '6':
+                    print 'Return To Main Window'
                     break
     m_account_IO.writeAccount(_entry)
     print "Have a nice day! Goodbye!"

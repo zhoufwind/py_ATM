@@ -23,12 +23,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="m_account_IO.py" />
+    <Compile Include="m_Admin_print.py" />
     <Compile Include="m_login.py" />
     <Compile Include="m_record_amount.py" />
     <Compile Include="m_report.py" />
     <Compile Include="m_tran.py" />
     <Compile Include="prettytable.py" />
     <Compile Include="py_ATM.py" />
+    <Compile Include="py_ATM_Admin.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="account.pickle" />
