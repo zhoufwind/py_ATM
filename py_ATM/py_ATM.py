@@ -1,24 +1,12 @@
 #!/usr/bin/env python
 
 import sys
-import pickle
 import m_account_IO, m_login, m_tran, m_report
 
-_account_file = 'account.txt'
-_block_file = 'blockList.txt'
-#_log_file = 'credit_account.log'       # define _log_file at m_record_amount/ m_report
-_account_pickle = 'account.pickle'      # define at m_record_amount as well
 _times = 3      # block accunt if login failed 3 times
 
-
 def main():
-    _accounts = {}
-
-    m_account_IO.readAccount(_accounts, _account_file)      # Import account information into app
-    with open (_account_pickle, 'wb') as f:         # dump dictionary(_accounts) to binary file(_account_pickle)
-        pickle.dump(_accounts, f)
-    with open (_account_pickle, 'rb') as f:         # load binary file(_account_pickle) into dictionary(_entry)
-        _entry = pickle.load(f)
+    _entry = m_account_IO.readAccount()      # Import account information into app
 
     print "***Welcome to ATM***"
     while True:
@@ -27,7 +15,7 @@ def main():
         elif _account == 'q':
             print "QUIT"
             break
-        elif m_login.f_login(_accounts, _account, _times, _block_file):     # If user login success, he can continue following functions
+        elif m_login.f_login(_entry, _account, _times):     # If user login success, he can continue following functions
             m_report.f_monthlybills(_account)       # Monthly Bills Report function
             print '''***Main Window***
             0   : Check Balance
@@ -40,26 +28,20 @@ def main():
             while True:
                 cmd = raw_input("Enter command: ").strip()
                 if len(cmd) == 0: continue
-                elif cmd == '0':
-                    #print 'Check Balance'
+                elif cmd == '0':    # check balance function
                     m_tran.f_checkBalance(_entry, _account)
-                elif cmd == '1':
-                    #print 'SHAKA XIAOFEI'
+                elif cmd == '1':    # Swiping Card function
                     m_tran.f_swipingCard(_entry, _account)
-                elif cmd == '2':
-                    #print 'XIANJIN QUKUAN'
+                elif cmd == '2':    # Withdrawal function
                     m_tran.f_withdrawal(_entry, _account)
-                elif cmd == '3':
-                    #print 'CUNKUAN'
+                elif cmd == '3':    # Deposit function
                     m_tran.f_deposit(_entry, _account)
-                elif cmd == '4':
-                    #print 'Check Log'
+                elif cmd == '4':    # Check log function
                     m_report.f_report(_account)
-                elif cmd == '5':
+                elif cmd == '5':    # Logout
                     print 'Return'
                     break
-    _accounts = _entry
-    m_account_IO.writeAccount(_accounts, _account_file)
+    m_account_IO.writeAccount(_entry)
     print "Have a nice day! Goodbye!"
     #sys.exit()
 

@@ -1,10 +1,15 @@
 import os
 import sys
 import m_login
+import pickle
 
-def readAccount(accounts, account_file):
+_account_file = 'account.txt'
+_account_pickle = 'account.pickle'      # define at m_record_amount as well
+
+def readAccount():
     "Import account file into memory, creating account dictionary"
-    with open(account_file) as f:
+    accounts = {}
+    with open(_account_file) as f:
         #f.readline()    # Ingore first line -- the comment bar
         rename = 0      # If account name repeat, using 'rename' variable change duplicate name
         for i in f.readlines():
@@ -16,13 +21,18 @@ def readAccount(accounts, account_file):
                 rename += 1
                 continue
             accounts[line[0]] = line[1:]        # Adding account information into dictionary
+    with open (_account_pickle, 'wb') as f:         # dump dictionary(_accounts) to binary file(_account_pickle)
+        pickle.dump(accounts, f)
+    with open (_account_pickle, 'rb') as f:         # load binary file(_account_pickle) into dictionary(_entry)
+        entry = pickle.load(f)
     #print accounts
+    return entry
 
-def writeAccount(account, account_file):
-    with open (account_file, 'w') as f:
+def writeAccount(entry):
+    with open (_account_file, 'w') as f:
         #f.writelines("Account	password	credit	balance\n")
         f.writelines("")
-    for k, v in account.items():
+    for k, v in entry.items():
         #print k, v[0], v[1], v[2]
-        f = open(account_file, 'a')
+        f = open(_account_file, 'a')
         f.writelines(k + '\t' + v[0] + '\t' + v[1] + '\t' + str(v[2]) + '\n')   # need change 'balance' from float to string format

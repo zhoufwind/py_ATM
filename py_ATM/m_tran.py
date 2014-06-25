@@ -14,7 +14,7 @@ def f_swipingCard(entry, account):
     _tran_date = time.strftime('%Y-%m-%d/%H:%M:%S', time.localtime())           # Log local time as transaction time
     _tran_type = 'card'
     while True:
-        _amount = raw_input("Transaction amount: ").strip()     # how much you will pay
+        _amount = raw_input("Pay Amount: ").strip()     # how much you will pay
         pattern = re.compile(r'^\d*$')      # BUG -- CANNOT INPUT FLOAT!!!
         match = pattern.match(_amount)
         if len(_amount) == 0: continue
@@ -35,7 +35,7 @@ def f_withdrawal(entry, account):
     _tran_date = time.strftime('%Y-%m-%d/%H:%M:%S', time.localtime())           # Log local time as transaction time
     _tran_type = 'cash'
     while True:
-        _amount = raw_input("Transaction amount: ").strip()     # how much you will withdrawal
+        _amount = raw_input("Withdrawal Amount: ").strip()     # how much you will withdrawal
         pattern = re.compile(r'^\d*$')
         match = pattern.match(_amount)
         if len(_amount) == 0: continue
@@ -56,7 +56,7 @@ def f_deposit(entry, account):
     _tran_date = time.strftime('%Y-%m-%d/%H:%M:%S', time.localtime())           # Log local time as transaction time
     _tran_type = 'deposit'
     while True:
-        _amount = raw_input("Deposit amount: ").strip()     # how much you will withdrawal
+        _amount = raw_input("Deposit Amount: ").strip()     # how much you will withdrawal
         pattern = re.compile(r'^\d*$')
         match = pattern.match(_amount)
         if len(_amount) == 0: continue
