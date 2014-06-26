@@ -8,6 +8,7 @@ from prettytable import PrettyTable
 _log_file = 'credit_account.log'
 #_billing_cycle = 30      # default billings cycle = 4 day
 #_billing_day = '13'     # default billing day = 13th every month
+_pay_due_day = 10
 
 def f_isLeapYear(year):     # year -- int
     Leap = False
@@ -117,7 +118,6 @@ def f_monthlybills(account):
     now_time = time.localtime()     # time_struct
     now_date = datetime.datetime(*now_time[:3])     # datetime
     _billing_day = f_billing_cycle(now_date.year, now_date.month + 1, now_date.day)     # define billing day
-
     #print now_time
     print time.strftime('%Y-%m-%d %H:%M:%S', now_time)  # output current time, struct_time => string
     if time.strftime('%d', now_time) == str(_billing_day):
@@ -141,6 +141,8 @@ def f_monthlybills(account):
             else:
                 print 'Invalid Input!'
                 continue
+    elif time.strftime('%d', now_time) == str(_pay_due_day):
+        print 'PAY DUE DAY!'
 
 def f_create_report_cycle(account, end_date, _billing_cycle):
     x = PrettyTable()
