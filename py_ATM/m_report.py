@@ -7,7 +7,7 @@ from prettytable import PrettyTable
 
 _log_file = 'credit_account.log'
 #_billing_cycle = 30      # default billings cycle = 4 day
-_billing_day = '13'     # default billing day = 13th every month
+#_billing_day = '13'     # default billing day = 13th every month
 
 def f_isLeapYear(year):     # year -- int
     Leap = False
@@ -56,7 +56,7 @@ def f_report(account):
         pattern = re.compile(r'^\d{4}-?\d{1,2}-?\d{1,2}$')
         match = pattern.match(start_date)
         if len(start_date) == 0:
-            _billing_cycle = f_billing_cycle(now_date.year, now_date.month, now_date.day)
+            _billing_cycle = f_billing_cycle(now_date.year, now_date.month, now_date.day)   # define billing cycle
             start_date = now_date - datetime.timedelta(days=_billing_cycle) # format: datetime.datetime(Y/m/D) | using datetime.timedelta() calc date diff
             #print start_date
             break
@@ -107,24 +107,34 @@ def f_create_report_rangel(account, start_date, end_date):
             if line[0] == account:
                 line_time = time.strptime(line[1], '%Y-%m-%d/%H:%M:%S')
                 line_date = datetime.datetime(*line_time[:3])
-                if line_date >= start_date and line_date <= end_date:
+                if line_date >= start_date and line_date <= end_date:   # print the log which between start_date and end_date
                     x.add_row(line)
     x.align = "l"
     x.padding_width = 2
     print x
 
 def f_monthlybills(account):
-    now_time = time.localtime()
-    now_date = datetime.datetime(*now_time[:3])
+    now_time = time.localtime()     # time_struct
+    now_date = datetime.datetime(*now_time[:3])     # datetime
+    _billing_day = f_billing_cycle(now_date.year, now_date.month + 1, now_date.day)     # define billing day
+
     #print now_time
     print time.strftime('%Y-%m-%d %H:%M:%S', now_time)  # output current time, struct_time => string
-    if time.strftime('%d', now_time) == _billing_day:
+    if time.strftime('%d', now_time) == str(_billing_day):
         while True:
-            cmd = raw_input("Today(%s) is your billing day! Do you want to print your monthly billing?\n(Y/N): " % _billing_day).strip().lower()
+            cmd = raw_input("Today is your billing day! Do you want to print your monthly billing?(Y/N): ").strip().lower()
             if len(cmd) == 0: continue
             elif cmd == 'y':
-                print 'YOUR LAST %s DAYS BILLING:' % _billing_cycle
-                f_create_report_cycle(account, now_date, _billing_cycle)
+                _billing_cycle = f_billing_cycle(now_date.year, now_date.month, now_date.day)   # define billing cycle
+                end_date = now_date - datetime.timedelta(days = 1)    # end_date is the day before now_date(billing day)
+                start_date = end_date - datetime.timedelta(days = _billing_cycle) # format: datetime.datetime(Y/m/D) | using datetime.timedelta() calc date diff
+                pay_due_date = now_date + datetime.timedelta(days = 10) # pay_due_date is 10 days after now_date(billing day)
+                print 'Month: %d billing report:' % now_date.month
+                print 'Billing Day: ' + now_date.strftime('%Y/%m/%d')
+                print 'Statement Cycle: ' + start_date.strftime('%Y/%m/%d') + '-' + end_date.strftime('%Y/%m/%d') # string
+                print 'Payment Due Date: ' + pay_due_date.strftime('%Y/%m/%d')
+                print 'Billing Details: '
+                f_create_report_cycle(account, end_date, _billing_cycle)
                 break
             elif cmd == 'n':
                 break
@@ -132,7 +142,7 @@ def f_monthlybills(account):
                 print 'Invalid Input!'
                 continue
 
-def f_create_report_cycle(account, now_date, _billing_cycle):
+def f_create_report_cycle(account, end_date, _billing_cycle):
     x = PrettyTable()
     x.field_names = ["account", "tran_date", "tran_type", "amount", "interest"]
     with open (_log_file) as f:
@@ -143,7 +153,7 @@ def f_create_report_cycle(account, now_date, _billing_cycle):
                 #print line_time
                 line_date = datetime.datetime(*line_time[:3])               # struct_time ==> datetime.datetime
                 #print line_date
-                if (now_date - line_date).days < (_billing_cycle + 1):      # 
+                if (end_date - line_date).days < (_billing_cycle + 1):      # 
                     #print line_date
                     x.add_row(line)
     x.align = "l"
