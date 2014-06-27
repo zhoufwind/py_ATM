@@ -43,7 +43,7 @@ def main():
                     py_ATM_Admin.main()
                     continue
                 elif cmd == '6':
-                    print 'Return To Main Window'
+                    print 'Return To Login Window'
                     break
     m_account_IO.writeAccount(_entry)
     print "Have a nice day! Goodbye!"

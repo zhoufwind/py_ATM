@@ -6,24 +6,59 @@ import re
 from prettytable import PrettyTable
 
 _log_file = 'credit_account.log'
-_billing_cycle = 30      # default billings cycle = 4 day
-_billing_day = '24'     # default billing day = 30th
+#_billing_cycle = 30      # default billings cycle = 4 day
+_billing_day = '13'     # default billing day = 13th every month
+
+def f_isLeapYear(year):     # year -- int
+    Leap = False
+    if (year % 4 == 0 and year % 100 != 0) or year % 400 == 0:
+        Leap = True
+    return Leap
+
+def f_billing_cycle(year, month, day):  # month/day -- int
+    billing_cycle = 30
+    if month == 1:
+        billing_cycle += 1
+    elif month == 2:
+        billing_cycle += 1
+    elif month == 3:
+        if f_isLeapYear(year):
+            billing_cycle = 29
+        else:
+            billing_cycle = 28
+    elif month == 4:
+        billing_cycle += 1
+    #elif month == 5:
+    elif month == 6:
+        billing_cycle += 1
+    #elif month == 7:
+    elif month == 8:
+        billing_cycle += 1
+    elif month == 9:
+        billing_cycle += 1
+    #elif month == 10:
+    elif month == 11:
+        billing_cycle += 1
+    #elif month == 12:
+    return billing_cycle
 
 def f_report(account):
     print '''
     Please enter log time range, date format: E.g.: '2014-06-18'
-    Enter 'NULL' by default, ATM print latest '_billing_cycle' log
+    Enter 'NULL' by default, ATM print latest nature month report
     '''
-    now_time = time.localtime()
+    now_time = time.localtime() # format: time.struct_time
     #print now_time
-    now_date = datetime.datetime(*now_time[:3])     # log: Y/m/D
+    now_date = datetime.datetime(*now_time[:3])     # format: datetime.datetime(Y/m/D) | filter time.struct_time
     #print now_date
     while True:     # Input start_date
         start_date = raw_input("Start Date: ")
         pattern = re.compile(r'^\d{4}-?\d{1,2}-?\d{1,2}$')
         match = pattern.match(start_date)
         if len(start_date) == 0:
-            start_date = now_date - datetime.timedelta(days=(_billing_cycle + 1)) # datetime
+            _billing_cycle = f_billing_cycle(now_date.year, now_date.month, now_date.day)
+            start_date = now_date - datetime.timedelta(days=_billing_cycle) # format: datetime.datetime(Y/m/D) | using datetime.timedelta() calc date diff
+            #print start_date
             break
         if start_date == 'q':
             print 'QUIT, Return HOME...'
@@ -33,16 +68,16 @@ def f_report(account):
             continue
         else:
             #start_date += '/00:00:00'
-            start_time = time.strptime(start_date, '%Y-%m-%d')
+            start_time = time.strptime(start_date, '%Y-%m-%d')  # string => struct_time
             start_date = datetime.datetime(*start_time[:3])
             break
     while True:     # Input start_date
         end_date = raw_input("End Date: ")
         pattern = re.compile(r'^\d{4}-?\d{1,2}-?\d{1,2}$')
         match = pattern.match(end_date)
-        if len(end_date) == 0:
-            end_time = time.localtime()
-            end_date = datetime.datetime(*end_time[:6])     # log: Y/m/D/H/M/S
+        if len(end_date) == 0:  # default: end date equal localtime
+            end_time = now_time    # format: time.struct_time
+            end_date = datetime.datetime(*end_time[:6])     # format: datetime (Y/m/D/H/M/S) | filter time.struct_time
             break
         if start_date == 'q':
             print 'QUIT, Return HOME...'
@@ -57,8 +92,10 @@ def f_report(account):
             if end_date > now_date:
                 end_date = datetime.datetime(*end_time[:6])
             break
+    #print "Log Range: %s-%s" % (start_date, end_date)  # output struct_time format
     print start_date
     print end_date
+    #print "Log Range: %s-%s" % (, )  # output string format
     f_create_report_rangel(account, start_date, end_date)
 
 def f_create_report_rangel(account, start_date, end_date):
