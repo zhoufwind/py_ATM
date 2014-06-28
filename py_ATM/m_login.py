@@ -1,5 +1,6 @@
 import os
 import sys
+from getpass import getpass
 
 _block_file = 'blockList.txt'
 
@@ -28,7 +29,7 @@ def f_login(accounts, account, times):
         # print "Found the user!", lookup(name)
         if not f_checkBlock(account):     # Check if user have been blocked
             for i in range(times):      # Verify the account name and password within 't' times
-                pwd = raw_input('Enter password: ')
+                pwd = getpass('Enter password: ').strip()
                 if pwd == accounts[account][0]:
                     print 'Login success!!'
                     return True         # <-- If user login, return true
